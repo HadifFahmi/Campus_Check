@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">My Application</string>
+
+    <array name="roles">
+        <item>Select the role</item>
+        <item>Intern</item>
+        <item>Admin</item>
+    </array>
+
+</resources>
+
