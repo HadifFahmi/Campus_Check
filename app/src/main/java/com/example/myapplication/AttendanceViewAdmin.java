@@ -1,9 +1,9 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -24,12 +24,14 @@ import java.util.Calendar;
 import java.util.List;
 
 public class AttendanceViewAdmin extends AppCompatActivity {
+
     private RecyclerView recyclerView;
     private UserAdapter adapter;
     private List<AttendanceModel> attendanceList;
     private DatabaseReference databaseReference;
     public Button btnCalendar, Exitbutton;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +46,7 @@ public class AttendanceViewAdmin extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         btnCalendar = findViewById(R.id.btn_Calendar);
-        Exitbutton = findViewById(R.id.btn_Exit);
+        Exitbutton = findViewById(R.id.btnBackAVA);
 
         btnCalendar.setOnClickListener(v ->
         {
@@ -93,7 +95,7 @@ public class AttendanceViewAdmin extends AppCompatActivity {
         });
 
         Exitbutton.setOnClickListener(v -> {
-            startActivity(new Intent(this, Admin.class));
+            startActivity(new Intent(this, AdminView.class));
             finish();
         });
     }

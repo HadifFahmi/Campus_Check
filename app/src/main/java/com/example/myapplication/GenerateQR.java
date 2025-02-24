@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.Button;
@@ -18,14 +20,25 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import java.util.UUID;
 
 public class GenerateQR extends AppCompatActivity {
-    public Button btn_generate;
+
+    public Button btn_generate, btn_back;
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_generate_qr);
 
-        btn_generate = findViewById(R.id.genrate);
+        btn_generate = findViewById(R.id.btnGenerateQR);
+        btn_back = findViewById(R.id.btnBackQRG);
+
+        btn_back.setOnClickListener(v ->
+        {
+            startActivity(new Intent(this, AdminView.class));
+            finish();
+        });
+
         btn_generate.setOnClickListener(v->
         {
             ImageView qrImageView = findViewById(R.id.qr);

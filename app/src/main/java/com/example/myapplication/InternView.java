@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,14 +16,23 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class InternView extends AppCompatActivity {
 
-    public TextView tv_Id, tv_Username, tv_Name;
-    public Button btn_scanner;
-    public Button btn_logout, btn_checkout;
+    public TextView tv_checkin, tv_checkout;
+    public Button btn_scanner, btn_settings, btn_checkout;
     SharedPreferences sharedPreferences;
 
     @SuppressLint("MissingInflatedId")
@@ -37,34 +47,80 @@ public class InternView extends AppCompatActivity {
             return insets;
         });
 
-        sharedPreferences = getSharedPreferences("com.example.myapplication.myrefrences", 0);
-        btn_scanner = findViewById(R.id.scanner);
-        btn_logout = findViewById(R.id.btnLogout);
+        btn_scanner = findViewById(R.id.btnScanner);
         btn_checkout = findViewById(R.id.btnCheckout);
-        tv_Id = findViewById(R.id.tvId);
-        tv_Username = findViewById(R.id.tvUsername);
-        tv_Name = findViewById(R.id.tvName);
+        btn_settings = findViewById(R.id.btnSettings);
+        tv_checkin = findViewById(R.id.tvCheckIn);
+        tv_checkout = findViewById(R.id.tvCheckOut);
 
-        SessionManager sessionManager = new SessionManager(this);
         DataBaseHapler dbHelper = new DataBaseHapler(this);
 
-        tv_Id.setText("ID : " + sessionManager.getId());
-        tv_Username.setText("USERNAME : " + sessionManager.getUsername());
-        tv_Name.setText("NAME : " + sessionManager.getName());
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference("attendance").child(currentDate);
+        DatabaseReference checkOutRef = FirebaseDatabase.getInstance().getReference("checkoutlist").child(currentDate);
+
+        // Automatically updates the check-in and check-out
+        attendanceRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                        String checkInTime = childSnapshot.child("timeStamp").getValue(String.class);
+
+                        if (checkInTime != null && !checkInTime.isEmpty()) {
+                            tv_checkin.setText(checkInTime);
+                        } else {
+                            tv_checkin.setText("Not yet checked in");
+                        }
+
+                        break;
+                    }
+                } else {
+                    tv_checkin.setText("Not yet checked in");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("InternView", "Database Error (Check-In): " + error.getMessage());
+            }
+        });
+
+        checkOutRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                        String checkOutTime = childSnapshot.child("timeStamp").getValue(String.class);
+
+                        if (checkOutTime != null && !checkOutTime.isEmpty()) {
+                            tv_checkout.setText(checkOutTime);
+                        } else {
+                            tv_checkout.setText("Not yet checked-in");
+                        }
+
+                        break;
+                    }
+                } else {
+                    tv_checkout.setText("Not yet checked-in");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("InternView", "Database Error (Check-Out): " + error.getMessage());
+            }
+        });
+
+        btn_settings.setOnClickListener(v ->
+        {
+            startActivity(new Intent(this, Profile.class));
+        });
 
         btn_scanner.setOnClickListener(v ->
         {
-           openQRScanner();
-        });
-
-
-
-        btn_logout.setOnClickListener(v ->
-        {
-            sessionManager.logout();
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            dbHelper.verifyScannedQR("85d38b45-812a-4187-a25c-db0f4af04baa");
         });
 
         btn_checkout.setOnClickListener(v ->
@@ -88,6 +144,18 @@ public class InternView extends AppCompatActivity {
             alert.show();
         });
 
+    }
+
+    private String formatTime(String timeStamp) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        try {
+            Date date = inputFormat.parse(timeStamp);
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return timeStamp;
+        }
     }
 
     public void openQRScanner() {

@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 public class RegisterUser extends AppCompatActivity {
 
     private EditText fnameInput, unameInput, etIdentication, etP, etRP;
@@ -82,8 +84,9 @@ public class RegisterUser extends AppCompatActivity {
                     Toast.makeText(RegisterUser.this, "Username already exists!", Toast.LENGTH_SHORT).show();
                 } else {
                     // Save User Using DataBaseHapler
-                   StudentModel students = new StudentModel(id, name, uname, password);
-                    dbHelper.saveUserToFirebase(students, new DataBaseHapler.DatabaseCallback() {
+                   String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+                   StudentModel students = new StudentModel(id, name, uname, hashedPassword);
+                   dbHelper.saveUserToFirebase(students, new DataBaseHapler.DatabaseCallback() {
                         @Override
                         public void onSuccess() {
                             startActivity(new Intent(RegisterUser.this, MainActivity.class));

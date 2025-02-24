@@ -32,6 +32,8 @@ android {
 
 dependencies {
 
+    implementation 'org.mindrot:jbcrypt:0.4' // for password encryption function
+    implementation 'com.google.android.material:material:1.9.0' // ability to use google icon
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity

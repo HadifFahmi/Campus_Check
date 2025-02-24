@@ -19,6 +19,15 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".ChangePassword"
+            android:exported="false" />
+        <activity
+            android:name=".Profile"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPassword"
+            android:exported="false" />
+        <activity
             android:name=".AttendanceViewIntern"
             android:exported="false" />
         <activity
@@ -28,7 +37,7 @@
             android:name=".RegisterUser"
             android:exported="false" />
         <activity
-            android:name=".Admin"
+            android:name=".AdminView"
             android:exported="false" />
         <activity
             android:name=".InternView"
@@ -36,9 +45,10 @@
         <activity
             android:name=".GenerateQR"
             android:exported="true" />
-        <activity android:name=".CaptureActivityPortrait"
+        <activity
+            android:name=".CaptureActivityPortrait"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

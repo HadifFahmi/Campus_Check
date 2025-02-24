@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,11 +25,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    Button btnsubmit, btnreg;
+    Button btnsubmit, btnreg, btnforgpass;
     EditText user, pass;
     SharedPreferences sharedPreferences;
     private DataBaseHapler dbHelper;
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnsubmit = findViewById(R.id.submit);
         btnreg = findViewById(R.id.btnRegister);
+        btnforgpass = findViewById(R.id.btnForgPass);
 
         dbHelper = new DataBaseHapler(this);
 
@@ -100,6 +101,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnforgpass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ForgotPassword.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     public void check(int role, String username, String password) { //password is not used???
@@ -120,14 +129,14 @@ public class MainActivity extends AppCompatActivity {
                                 String adminId = admin.getId();
                                 String adminUser = admin.getUser();
                                 String adminName = admin.getName();
-                                String adminPass = admin.getPass();
+                                String storedHashedPassword = admin.getPass();
 
-                                if (adminPass.equals(password)) {
+                                if (BCrypt.checkpw(password, storedHashedPassword)) {
                                     // Save the admin ID and username in the session
                                     SessionManager sessionManager = new SessionManager(MainActivity.this);
                                     sessionManager.createSession("", adminUser, adminName);
 
-                                    startActivity(new Intent(MainActivity.this, Admin.class));  // Navigate to the main activity
+                                    startActivity(new Intent(MainActivity.this, AdminView.class));  // Navigate to the main activity
                                     finish(); // Close current activity
                                 } else {
                                     // Incorrect password
@@ -166,9 +175,9 @@ public class MainActivity extends AppCompatActivity {
                                 String studentId = student.getId();
                                 String studentUser = student.getUser();
                                 String studentName = student.getName();
-                                String studentPass = student.getPass();
+                                String storedHashedPassword = student.getPass();
 
-                                if (studentPass.equals(password)) {
+                                if (BCrypt.checkpw(password, storedHashedPassword)) {
                                     // Save the student ID and username in the session
                                     SessionManager sessionManager = new SessionManager(MainActivity.this);
                                     sessionManager.createSession(studentId, studentUser, studentName);
