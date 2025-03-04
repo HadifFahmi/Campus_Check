@@ -15,6 +15,7 @@ public class SessionManager {
     private static final String KEY_USERNAME = "username";
 
     private static final String KEY_NAME = "name";
+    private static final String KEY_ROLE = "role";
 
     // Constructor
     public SessionManager(Context context) {
@@ -24,10 +25,11 @@ public class SessionManager {
     }
 
     // Save student ID to SharedPreferences
-    public void createSession(String Id, String User, String Name){
+    public void createSession(String Id, String User, String Name, int Role){
         editor.putString(KEY_ID, Id);
         editor.putString(KEY_USERNAME, User);
         editor.putString(KEY_NAME, Name);
+        editor.putInt(KEY_ROLE, Role);
         editor.apply();  // Apply changes asynchronously
     }
 
@@ -43,6 +45,10 @@ public class SessionManager {
 
     public String getName() {
         return sharedPreferences.getString(KEY_NAME, null);  // Returns null if not found
+    }
+
+    public int getRole() {
+        return sharedPreferences.getInt(KEY_ROLE, 0);  // Returns 0 if not found
     }
 
     // Clear session data (e.g., when user logs out)

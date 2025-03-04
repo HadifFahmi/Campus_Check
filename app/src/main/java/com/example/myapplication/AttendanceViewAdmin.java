@@ -27,7 +27,7 @@ public class AttendanceViewAdmin extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private UserAdapter adapter;
-    private List<AttendanceModel> attendanceList;
+    private List<AttendanceModel> attendanceList, checkoutList;
     private DatabaseReference databaseReference;
     public Button btnCalendar, Exitbutton;
 
@@ -42,32 +42,30 @@ public class AttendanceViewAdmin extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         attendanceList = new ArrayList<>();
-        adapter = new UserAdapter(this, attendanceList);
+        checkoutList = new ArrayList<>();
+        adapter = new UserAdapter(this, attendanceList, checkoutList);
         recyclerView.setAdapter(adapter);
 
         btnCalendar = findViewById(R.id.btn_Calendar);
         Exitbutton = findViewById(R.id.btnBackAVA);
 
-        btnCalendar.setOnClickListener(v ->
-        {
-            // Get the current date
+        btnCalendar.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-            // Create a DatePickerDialog
             DatePickerDialog datePickerDialog = new DatePickerDialog(
                     this,
                     (view, selectedYear, selectedMonth, selectedDay) -> {
-                        // Format the date (YYYY-MM-DD)
                         String selectedDate = String.format("%02d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
                         Toast.makeText(this, selectedDate, Toast.LENGTH_SHORT).show();
 
-                        databaseReference = FirebaseDatabase.getInstance().getReference("attendance").child(selectedDate);
+                        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference("attendance").child(selectedDate);
+                        DatabaseReference checkoutRef = FirebaseDatabase.getInstance().getReference("checkoutlist").child(selectedDate);
 
-                        // Fetch data from Firebase
-                        databaseReference.addValueEventListener(new ValueEventListener() {
+                        // Fetch attendanceList
+                        attendanceRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 attendanceList.clear();
@@ -82,16 +80,35 @@ public class AttendanceViewAdmin extends AppCompatActivity {
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(AttendanceViewAdmin.this, "Failed to fetch data", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AttendanceViewAdmin.this, "Failed to fetch attendance data", Toast.LENGTH_SHORT).show();
                             }
                         });
+
+                        // Fetch checkoutList
+                        checkoutRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                checkoutList.clear();
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    AttendanceModel checkout = dataSnapshot.getValue(AttendanceModel.class);
+                                    if (checkout != null) {
+                                        checkoutList.add(checkout);
+                                    }
+                                }
+                                adapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(AttendanceViewAdmin.this, "Failed to fetch checkout data", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                     },
                     year, month, day
             );
 
-                    // Show the DatePickerDialog
             datePickerDialog.show();
-        
         });
 
         Exitbutton.setOnClickListener(v -> {

@@ -81,10 +81,10 @@ public class MainActivity extends AppCompatActivity {
 
                     if (selectedRole.equals("Intern")) {
                         // Check Student
-                        check(1, user.getText().toString().toLowerCase(), pass.getText().toString().toLowerCase());
+                        check(2, user.getText().toString().toLowerCase(), pass.getText().toString().toLowerCase());
                     } else if (selectedRole.equals("Admin")) {
                         // Check Teacher
-                        check(0, user.getText().toString().toLowerCase(), pass.getText().toString().toLowerCase());
+                        check(1, user.getText().toString().toLowerCase(), pass.getText().toString().toLowerCase());
                     } else {
                         // No Role Selected
                         Toast.makeText(MainActivity.this, "Please select a role", Toast.LENGTH_SHORT).show();
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void check(int role, String username, String password) { //password is not used???
-        if (role == 0) { // Admin login
+        if (role == 1) { // Admin login
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("admin");
 
             // Query Firebase to find the student by username
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (BCrypt.checkpw(password, storedHashedPassword)) {
                                     // Save the admin ID and username in the session
                                     SessionManager sessionManager = new SessionManager(MainActivity.this);
-                                    sessionManager.createSession("", adminUser, adminName);
+                                    sessionManager.createSession("", adminUser, adminName, role);
 
                                     startActivity(new Intent(MainActivity.this, AdminView.class));  // Navigate to the main activity
                                     finish(); // Close current activity
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-        } else if (role == 1) { // Student login
+        } else if (role == 2) { // Student login
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("students");
 
             // Query Firebase to find the student by username
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (BCrypt.checkpw(password, storedHashedPassword)) {
                                     // Save the student ID and username in the session
                                     SessionManager sessionManager = new SessionManager(MainActivity.this);
-                                    sessionManager.createSession(studentId, studentUser, studentName);
+                                    sessionManager.createSession(studentId, studentUser, studentName, role);
 
                                     startActivity(new Intent(MainActivity.this, InternView.class));  // Navigate to the main activity
                                     finish(); // Close current activity

@@ -120,7 +120,8 @@ public class InternView extends AppCompatActivity {
 
         btn_scanner.setOnClickListener(v ->
         {
-            dbHelper.verifyScannedQR("85d38b45-812a-4187-a25c-db0f4af04baa");
+            openQRScanner();
+//            dbHelper.verifyScannedQR("fbf1e587-2ef2-4738-b8b4-5c904a828b05"); // debugging purposes
         });
 
         btn_checkout.setOnClickListener(v ->

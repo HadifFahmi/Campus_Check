@@ -30,7 +30,7 @@ public class AttendanceViewIntern extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private UserAdapter adapter;
-    private List<AttendanceModel> attendanceList;
+    private List<AttendanceModel> attendanceList, checkoutList;
     private DatabaseReference databaseReference;
     public Button btnCalendar2, Exitbutton2;
 
@@ -45,7 +45,8 @@ public class AttendanceViewIntern extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         attendanceList = new ArrayList<>();
-        adapter = new UserAdapter(this, attendanceList);
+        checkoutList = new ArrayList<>();
+        adapter = new UserAdapter(this, attendanceList, checkoutList);
         recyclerView.setAdapter(adapter);
 
         btnCalendar2 = findViewById(R.id.btn_Calendar2);
@@ -63,16 +64,17 @@ public class AttendanceViewIntern extends AppCompatActivity {
                         String selectedDate = String.format("%02d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
                         Toast.makeText(this, selectedDate, Toast.LENGTH_SHORT).show();
 
-                        String user = new SessionManager(this).getUsername();
-                        databaseReference = FirebaseDatabase.getInstance().getReference("attendance").child(selectedDate);
+                        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference("attendance").child(selectedDate);
+                        DatabaseReference checkoutRef = FirebaseDatabase.getInstance().getReference("checkoutlist").child(selectedDate);
 
-                        databaseReference.addValueEventListener(new ValueEventListener() {
+                        // Fetch attendanceList
+                        attendanceRef.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 attendanceList.clear();
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                                     AttendanceModel attendance = dataSnapshot.getValue(AttendanceModel.class);
-                                    if (attendance != null && user.equals(dataSnapshot.getKey())) {
+                                    if (attendance != null) {
                                         attendanceList.add(attendance);
                                     }
                                 }
@@ -81,9 +83,30 @@ public class AttendanceViewIntern extends AppCompatActivity {
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
-                                Toast.makeText(AttendanceViewIntern.this, "Failed to fetch data", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AttendanceViewIntern.this, "Failed to fetch attendance data", Toast.LENGTH_SHORT).show();
                             }
                         });
+
+                        // Fetch checkoutList
+                        checkoutRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                checkoutList.clear();
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                                    AttendanceModel checkout = dataSnapshot.getValue(AttendanceModel.class);
+                                    if (checkout != null) {
+                                        checkoutList.add(checkout);
+                                    }
+                                }
+                                adapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Toast.makeText(AttendanceViewIntern.this, "Failed to fetch checkout data", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                     },
                     year, month, day
             );

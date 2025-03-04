@@ -10,16 +10,22 @@
         android:padding="16dp">
 
         <EditText
-            android:id="@+id/etName"
+            android:id="@+id/etDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Name" />
+            android:hint="Edit Date" />
 
         <EditText
-            android:id="@+id/etUser"
+            android:id="@+id/etCinTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Username" />
+            android:hint="Edit Check-in Time" />
+
+        <EditText
+            android:id="@+id/etCoutTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Edit Check-out Time" />
 
     </LinearLayout>
 
