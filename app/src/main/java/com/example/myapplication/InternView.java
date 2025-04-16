@@ -7,10 +7,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -32,7 +34,8 @@ import java.util.Locale;
 public class InternView extends AppCompatActivity {
 
     public TextView tv_checkin, tv_checkout;
-    public Button btn_scanner, btn_settings, btn_checkout;
+    public Button btn_scanner, btn_checkout;
+    public ImageView ivsettingsitern;
     SharedPreferences sharedPreferences;
 
     @SuppressLint("MissingInflatedId")
@@ -49,11 +52,12 @@ public class InternView extends AppCompatActivity {
 
         btn_scanner = findViewById(R.id.btnScanner);
         btn_checkout = findViewById(R.id.btnCheckout);
-        btn_settings = findViewById(R.id.btnSettings);
+        ivsettingsitern = findViewById(R.id.ivSettingsIntern);
         tv_checkin = findViewById(R.id.tvCheckIn);
         tv_checkout = findViewById(R.id.tvCheckOut);
 
         DataBaseHapler dbHelper = new DataBaseHapler(this);
+        SessionManager sessionManager = new SessionManager(this);
 
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
@@ -66,15 +70,20 @@ public class InternView extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                        String checkInTime = childSnapshot.child("timeStamp").getValue(String.class);
+                        String username = childSnapshot.child("user").getValue(String.class);
 
-                        if (checkInTime != null && !checkInTime.isEmpty()) {
-                            tv_checkin.setText(checkInTime);
-                        } else {
-                            tv_checkin.setText("Not yet checked in");
+                        if (username.equals(sessionManager.getUsername())) {
+                            String checkInTime = childSnapshot.child("timeStamp").getValue(String.class);
+
+                            if (checkInTime != null && !checkInTime.isEmpty()) {
+                                tv_checkin.setText(checkInTime);
+                            } else {
+                                tv_checkin.setText("Not yet checked in");
+                            }
+
+                            break;
                         }
 
-                        break;
                     }
                 } else {
                     tv_checkin.setText("Not yet checked in");
@@ -92,15 +101,19 @@ public class InternView extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                        String checkOutTime = childSnapshot.child("timeStamp").getValue(String.class);
+                        String username = childSnapshot.child("user").getValue(String.class);
 
-                        if (checkOutTime != null && !checkOutTime.isEmpty()) {
-                            tv_checkout.setText(checkOutTime);
-                        } else {
-                            tv_checkout.setText("Not yet checked-in");
+                        if (username.equals(sessionManager.getUsername())) {
+                            String checkOutTime = childSnapshot.child("timeStamp").getValue(String.class);
+
+                            if (checkOutTime != null && !checkOutTime.isEmpty()) {
+                                tv_checkout.setText(checkOutTime);
+                            } else {
+                                tv_checkout.setText("Not yet checked-in");
+                            }
+
+                            break;
                         }
-
-                        break;
                     }
                 } else {
                     tv_checkout.setText("Not yet checked-in");
@@ -113,15 +126,21 @@ public class InternView extends AppCompatActivity {
             }
         });
 
-        btn_settings.setOnClickListener(v ->
+        //  TEST PURPOSE ONLY  ********************************************
+
+
+
+        //  ***************************************************************
+
+        ivsettingsitern.setOnClickListener(v ->
         {
             startActivity(new Intent(this, Profile.class));
         });
 
         btn_scanner.setOnClickListener(v ->
         {
-            openQRScanner();
-//            dbHelper.verifyScannedQR("fbf1e587-2ef2-4738-b8b4-5c904a828b05"); // debugging purposes
+           openQRScanner();
+//            dbHelper.verifyScannedQR("b1786d9b-aa95-4de5-ac65-431d8a0c9e3f"); // debugging purposes
         });
 
         btn_checkout.setOnClickListener(v ->

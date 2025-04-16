@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -21,35 +20,27 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class Profile extends AppCompatActivity {
+public class ProfileAdmin extends AppCompatActivity {
 
-    public Button btnback, btnlogout, btnchangepass, btnseeattend;
-    public TextView tvid, tvname, tvuser, tvemail, tvphone, tvinout, tvuniname, tvfield, tvdivision;
+    public Button btnbackadmin, btnlogoutadmin, btnchangepassadmin;
+    public TextView tvnameadmin, tvuseradmin, tvidadmin,tvemailadmin,tvphoneadmin;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_profile_admin);
 
-        btnback = findViewById(R.id.btnBackPf);
-        btnchangepass = findViewById(R.id.btnChangePass);
-        btnlogout = findViewById(R.id.btnLogoutIntern);
-        btnseeattend = findViewById(R.id.btnSeeAttend);
-        tvid = findViewById(R.id.tvId);
-        tvuser = findViewById(R.id.tvUsername);
-        tvname = findViewById(R.id.tvName);
-        tvemail = findViewById(R.id.tvEmail);
-        tvphone = findViewById(R.id.tvPhone);
-        tvinout = findViewById(R.id.tvInOut);
-        tvuniname = findViewById(R.id.tvUniName);
-        tvfield = findViewById(R.id.tvField);
-        tvdivision = findViewById(R.id.tvDivision);
+        tvnameadmin = findViewById(R.id.tvNameAdmin);
+        tvuseradmin = findViewById(R.id.tvUsernameAdmin);
+        tvidadmin = findViewById(R.id.tvIdAdmin);
+        tvemailadmin = findViewById(R.id.tvEmailAdmin);
+        tvphoneadmin = findViewById(R.id.tvPhoneAdmin);
 
         SessionManager sessionManager = new SessionManager(this);
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("sdetails");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("tdetails");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -58,23 +49,15 @@ public class Profile extends AppCompatActivity {
                     String uname = snapshot.child("username").getValue(String.class);
                     if (uname.equals(sessionManager.getUsername())) {
                         String fname = snapshot.child("fullName").getValue(String.class);
-                        String id = snapshot.child("studentId").getValue(String.class);
+                        String id = snapshot.child("identification").getValue(String.class);
                         String email = snapshot.child("email").getValue(String.class);
                         String phone = snapshot.child("phoneNumber").getValue(String.class);
-                        String inOut = snapshot.child("inOutStatus").getValue(String.class);
-                        String uniName = snapshot.child("universityName").getValue(String.class);
-                        String fos = snapshot.child("fieldOfStudy").getValue(String.class);
-                        String division = snapshot.child("division").getValue(String.class);
 
-                        tvname.setText("Full Name: " + fname);
-                        tvuser.setText(("Username: " + uname));
-                        tvid.setText("Student ID: " + id);
-                        tvemail.setText("Email: " + email);
-                        tvphone.setText("Phone Number: " + phone);
-                        tvinout.setText("Inside/Outside: " + inOut);
-                        tvuniname.setText("University Name: " + uniName);
-                        tvfield.setText("Field of Study: " + fos);
-                        tvdivision.setText("Division: " + division);
+                        tvnameadmin.setText("Full Name: " + fname);
+                        tvuseradmin.setText(("Username: " + uname));
+                        tvidadmin.setText("Staff ID: " + id);
+                        tvemailadmin.setText("Email: " + email);
+                        tvphoneadmin.setText("Phone Number: " + phone);
                     }
 
                 }
@@ -86,23 +69,22 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        btnback.setOnClickListener(v ->
+        btnbackadmin = findViewById(R.id.btnBackPA);
+        btnchangepassadmin = findViewById(R.id.btnChangePassAdmin);
+        btnlogoutadmin = findViewById(R.id.btnLogoutAdmin);
+
+        btnbackadmin.setOnClickListener(v ->
         {
-            startActivity(new Intent(this, InternView.class));
+            startActivity(new Intent(this, AdminView.class));
             finish();
         });
 
-        btnchangepass.setOnClickListener(v ->
+        btnchangepassadmin.setOnClickListener(v ->
         {
             startActivity(new Intent(this, ChangePassword.class));
         });
 
-        btnseeattend.setOnClickListener(v ->
-        {
-            startActivity(new Intent(this, AttendanceViewIntern.class));
-        });
-
-        btnlogout.setOnClickListener(v ->
+        btnlogoutadmin.setOnClickListener(v ->
         {
             sessionManager.logout();
             startActivity(new Intent(this, MainActivity.class));

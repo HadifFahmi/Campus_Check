@@ -5,10 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Profile">
+    tools:context=".ProfileAdmin">
 
     <Button
-        android:id="@+id/btnBackPf"
+        android:id="@+id/btnBackPA"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -27,7 +27,7 @@
         app:rippleColor="@color/grey" />
 
     <Button
-        android:id="@+id/btnLogoutIntern"
+        android:id="@+id/btnLogoutAdmin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
@@ -84,18 +84,18 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:id="@+id/tvHeader"
+                    android:id="@+id/tvHeaderAdmin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="User Profile"
+                    android:text="Admin Profile"
                     android:textColor="@android:color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tvName"
+                    android:id="@+id/tvNameAdmin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
@@ -104,7 +104,7 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/tvUsername"
+                    android:id="@+id/tvUsernameAdmin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -113,16 +113,16 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/tvId"
+                    android:id="@+id/tvIdAdmin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="5dp"
-                    android:text="Student ID:"
+                    android:text="Staff ID:"
                     android:textColor="#696969"
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/tvEmail"
+                    android:id="@+id/tvEmailAdmin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="5dp"
@@ -131,48 +131,11 @@
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/tvPhone"
+                    android:id="@+id/tvPhoneAdmin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="5dp"
                     android:text="Phone Number:"
-                    android:textColor="#696969"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvInOut"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="5dp"
-                    android:text="From In/Out of Uni :"
-                    android:textColor="#696969"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvUniName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="5dp"
-                    android:text="University Name:"
-                    android:textColor="#696969"
-                    android:textSize="16sp" />
-
-
-                <TextView
-                    android:id="@+id/tvField"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="5dp"
-                    android:text="Field Of Study:"
-                    android:textColor="#696969"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/tvDivision"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="5dp"
-                    android:text="Division:"
                     android:textColor="#696969"
                     android:textSize="16sp" />
 
@@ -188,7 +151,7 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/btnChangePass"
+                android:id="@+id/btnChangePassAdmin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -197,18 +160,6 @@
                 android:padding="8dp"
                 android:text="Change Password"
                 android:textColor="@android:color/white" />
-
-            <Button
-                android:id="@+id/btnSeeAttend"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/blue"
-                android:padding="8dp"
-                android:text="See My Attendance"
-                android:textColor="@android:color/white" />
-
 
         </LinearLayout>
 

@@ -2,9 +2,11 @@ package com.example.myapplication;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +29,8 @@ import java.util.Locale;
 
 public class AdminView extends AppCompatActivity {
 
-    public Button qrcode, attendance, logout;
+    public Button qrcode, btnadminreport;
+    public ImageView ivsettingsadmin;
     public TextView counttv;
 
     @SuppressLint("MissingInflatedId")
@@ -44,9 +47,9 @@ public class AdminView extends AppCompatActivity {
 
         SessionManager sessionManager = new SessionManager(this);
 
+        ivsettingsadmin = findViewById(R.id.ivSettingsAdmin);
         qrcode = findViewById(R.id.btnQRPage);
-        attendance = findViewById(R.id.btnAttendanceAdmin);
-        logout = findViewById(R.id.btnLogoutAdmin);
+        btnadminreport = findViewById(R.id.btnAdminReport);
         counttv = findViewById(R.id.tvCountIntern);
 
         String todayDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
@@ -66,6 +69,11 @@ public class AdminView extends AppCompatActivity {
             }
         });
 
+        ivsettingsadmin.setOnClickListener(v ->
+        {
+            startActivity(new Intent(this, ProfileAdmin.class));
+        });
+
         qrcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,19 +82,12 @@ public class AdminView extends AppCompatActivity {
             }
         });
 
-        attendance.setOnClickListener(new View.OnClickListener() {
+        btnadminreport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AdminView.this , AttendanceViewAdmin.class);
+                Intent intent = new Intent(AdminView.this , AdminReport.class);
                 startActivity(intent);
             }
-        });
-
-        logout.setOnClickListener(v -> {
-            sessionManager.logout();
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
         });
 
     }

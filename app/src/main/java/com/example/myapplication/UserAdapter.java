@@ -155,7 +155,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         builder.setPositiveButton("Save", (dialog, which) -> {
             String newDate = editDate.getText().toString().trim();
             String cinTime = editCinTimestamp.getText().toString().trim();
-            String coutTime = editDate.getText().toString().trim();
+            String coutTime = editCoutTimestamp.getText().toString().trim();
 
             if (!newDate.isEmpty() && !cinTime.isEmpty() && !coutTime.isEmpty()) {
                 updateAttendance(attendance.getId(), attendance.getName(), attendance.getUser(), cinTime, coutTime, newDate, position);
@@ -171,34 +171,113 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     }
 
     private void updateAttendance(String id, String name, String user, String cinTime, String coutTime, String newDate, int position) {
-        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference("attendance").child(newDate).child(id);
-        DatabaseReference checkoutRef = FirebaseDatabase.getInstance().getReference("checkoutlist").child(newDate).child(id);
+        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference("attendance").child(newDate);
+        DatabaseReference checkoutRef = FirebaseDatabase.getInstance().getReference("checkoutlist").child(newDate);
 
         AttendanceModel updatedAttendance = new AttendanceModel(id, name, user, cinTime, newDate);
         AttendanceModel updatedCheckOutList = new AttendanceModel(id, name, user, coutTime, newDate);
 
-        // Overwrite the existing attendance record in Firebase
-        attendanceRef.setValue(updatedAttendance)
-                .addOnSuccessListener(aVoid -> {
-                    attendanceList.set(position, updatedAttendance);
-                    notifyItemChanged(position);
-                    Toast.makeText(context, "Attendance updated successfully", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(context, "Failed to update attendance", Toast.LENGTH_SHORT).show()
-                );
+        attendanceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    String username = childSnapshot.child("user").getValue(String.class);
 
-        if (coutTime != null && coutTime.isEmpty() && coutTime != "Not yet check out") {
-            checkoutRef.setValue(updatedCheckOutList)
-                    .addOnSuccessListener(aVoid -> {
-                        attendanceList.set(position, updatedCheckOutList);
-                        notifyItemChanged(position);
-                        Toast.makeText(context, "Attendance updated successfully", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(context, "Failed to update attendance", Toast.LENGTH_SHORT).show()
-                    );
+                    if (username != null && username.equals(user)) {
+                        childSnapshot.getRef().removeValue()
+                                .addOnSuccessListener(aVoid -> {
+                                    String uniqueId = attendanceRef.push().getKey();
+                                    attendanceRef.child(uniqueId).setValue(updatedAttendance)
+                                            .addOnSuccessListener(aVoid2 -> {
+                                                attendanceList.set(position, updatedAttendance);
+                                                notifyItemChanged(position);
+                                                Toast.makeText(context, "Attendance updated successfully", Toast.LENGTH_SHORT).show();
+                                            })
+                                            .addOnFailureListener(e ->
+                                                    Toast.makeText(context, "Failed to update attendance", Toast.LENGTH_SHORT).show()
+                                            );
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(context, "Failed to remove old attendance record", Toast.LENGTH_SHORT).show()
+                                );
+                    }
+                }
+            }
 
-        }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("Firebase", "Error deleting data", error.toException());
+            }
+        });
+
+        checkoutRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    String username = childSnapshot.child("user").getValue(String.class);
+
+                    if (username != null && username.equals(user)) {
+                        childSnapshot.getRef().removeValue()
+                                .addOnSuccessListener(aVoid -> {
+                                    String uniqueId = checkoutRef.push().getKey();
+                                    checkoutRef.child(uniqueId).setValue(updatedCheckOutList)
+                                            .addOnSuccessListener(aVoid2 -> {
+                                                attendanceList.set(position, updatedCheckOutList);
+                                                notifyItemChanged(position);
+                                                Toast.makeText(context, "Attendance updated successfully", Toast.LENGTH_SHORT).show();
+                                            })
+                                            .addOnFailureListener(e ->
+                                                    Toast.makeText(context, "Failed to update attendance", Toast.LENGTH_SHORT).show()
+                                            );
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(context, "Failed to remove old attendance record", Toast.LENGTH_SHORT).show()
+                                );
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                Log.e("Firebase", "Error deleting data", error.toException());
+            }
+        });
+
+        // Remove old attendance record before adding the new one
+//        attendanceRef.removeValue()
+//                .addOnSuccessListener(aVoid -> {
+//                    attendanceRef.setValue(updatedAttendance)
+//                            .addOnSuccessListener(aVoid2 -> {
+//                                attendanceList.set(position, updatedAttendance);
+//                                notifyItemChanged(position);
+//                                Toast.makeText(context, "Attendance updated successfully", Toast.LENGTH_SHORT).show();
+//                            })
+//                            .addOnFailureListener(e ->
+//                                    Toast.makeText(context, "Failed to update attendance", Toast.LENGTH_SHORT).show()
+//                            );
+//                })
+//                .addOnFailureListener(e ->
+//                        Toast.makeText(context, "Failed to remove old attendance record", Toast.LENGTH_SHORT).show()
+//                );
+
+        // Remove old checkout record before adding new checkout data
+//        if (coutTime != null && !coutTime.isEmpty() && !coutTime.equals("Not yet check out")) {
+//            checkoutRef.removeValue()
+//                    .addOnSuccessListener(aVoid -> {
+//                        checkoutRef.setValue(updatedCheckOutList)
+//                                .addOnSuccessListener(aVoid2 -> {
+//                                    attendanceList.set(position, updatedCheckOutList);
+//                                    notifyItemChanged(position);
+//                                    Toast.makeText(context, "Check-out updated successfully", Toast.LENGTH_SHORT).show();
+//                                })
+//                                .addOnFailureListener(e ->
+//                                        Toast.makeText(context, "Failed to update check-out", Toast.LENGTH_SHORT).show()
+//                                );
+//                    })
+//                    .addOnFailureListener(e ->
+//                            Toast.makeText(context, "Failed to remove old check-out record", Toast.LENGTH_SHORT).show()
+//                    );
+//        }
     }
+
 }

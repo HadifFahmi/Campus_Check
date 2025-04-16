@@ -112,7 +112,7 @@ public class AttendanceViewAdmin extends AppCompatActivity {
         });
 
         Exitbutton.setOnClickListener(v -> {
-            startActivity(new Intent(this, AdminView.class));
+            startActivity(new Intent(this, AdminReport.class));
             finish();
         });
     }

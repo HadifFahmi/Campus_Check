@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void check(int role, String username, String password) { //password is not used???
         if (role == 1) { // Admin login
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("admin");
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("teacher");
 
             // Query Firebase to find the student by username
             databaseReference.orderByChild("user").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {

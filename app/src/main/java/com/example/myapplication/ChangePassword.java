@@ -38,6 +38,12 @@ public class ChangePassword extends AppCompatActivity {
         et_newrepass = findViewById(R.id.etNewConfPass2);
         btn_cfrmchange = findViewById(R.id.btnCfrmChange);
 
+        SessionManager sessionManager = new SessionManager(this);
+
+        btn_cfrmchange.setOnClickListener(v -> {
+            changepass();
+        });
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -61,36 +67,75 @@ public class ChangePassword extends AppCompatActivity {
 
         SessionManager sessionManager = new SessionManager(this);
         String uname = sessionManager.getUsername();
+        int role = sessionManager.getRole();
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("students");
-        databaseReference.orderByChild("user").equalTo(uname)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
+        if (role == 1) { //Check if Admin
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("teacher");
+            databaseReference.orderByChild("user").equalTo(uname)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
 
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
-                                snapshot.getRef().child("pass").setValue(hashedPassword)
-                                        .addOnSuccessListener(unused -> {
-                                            Toast.makeText(ChangePassword.this, "Password updated successfully!", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(ChangePassword.this, Profile.class));
-                                            finish();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(ChangePassword.this, "Failed to update password!", Toast.LENGTH_SHORT).show();
-                                        });
-                                break; // Stop searching after updating
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+                                    snapshot.getRef().child("pass").setValue(hashedPassword)
+                                            .addOnSuccessListener(unused -> {
+                                                Toast.makeText(ChangePassword.this, "Password updated successfully!", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(ChangePassword.this, ProfileAdmin.class));
+                                                finish();
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(ChangePassword.this, "Failed to update password!", Toast.LENGTH_SHORT).show();
+                                            });
+                                    break; // Stop searching after updating
+                                }
+                            } else {
+                                Toast.makeText(ChangePassword.this, "Username not found!", Toast.LENGTH_SHORT).show();
                             }
-                        } else {
-                            Toast.makeText(ChangePassword.this, "Username not found!", Toast.LENGTH_SHORT).show();
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(ChangePassword.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(ChangePassword.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+        } else if (role == 2) { //Check if Intern
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("students");
+            databaseReference.orderByChild("user").equalTo(uname)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+                                    snapshot.getRef().child("pass").setValue(hashedPassword)
+                                            .addOnSuccessListener(unused -> {
+                                                Toast.makeText(ChangePassword.this, "Password updated successfully!", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(ChangePassword.this, Profile.class));
+                                                finish();
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(ChangePassword.this, "Failed to update password!", Toast.LENGTH_SHORT).show();
+                                            });
+                                    break; // Stop searching after updating
+                                }
+                            } else {
+                                Toast.makeText(ChangePassword.this, "Username not found!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Toast.makeText(ChangePassword.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+
+        }
+
+
     }
 }

@@ -5,7 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/offwhite"
     android:gravity="center"
     android:orientation="vertical"
     tools:context=".MainActivity">
@@ -23,9 +22,8 @@
         android:layout_marginBottom="28dp"
         android:fontFamily="sans-serif-medium"
         android:padding="5dp"
-        android:text="Intern Attendance System"
+        android:text=" Intern Attendance System"
         android:textAlignment="center"
-        android:textColor="@color/black"
         android:textSize="26sp"
         android:textStyle="bold"
 
@@ -37,9 +35,7 @@
         android:layout_height="40dp"
         android:layout_marginBottom="44dp"
         android:padding="8dp"
-        android:textColor="#000000"
         android:textSize="16sp"
-
         />
 
     <EditText
@@ -49,9 +45,6 @@
         android:layout_marginBottom="20dp"
         android:hint="User Name !"
         android:inputType="text"
-        android:textColor="@color/black"
-        android:textColorHint="@color/black"
-
         />
 
     <EditText
@@ -61,10 +54,6 @@
         android:layout_marginBottom="28dp"
         android:hint="Your Password !"
         android:inputType="textPassword"
-        android:textColor="@color/black"
-        android:textColorHint="@color/black"
-
-
         />
 
     <Button
@@ -72,9 +61,7 @@
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:layout_margin="20dp"
-        android:onClick="Submit"
-        android:text="Submit"
-        android:textColor="@color/white" />
+        android:text="Submit"/>
 
     <Button
         android:id="@+id/btnRegister"

@@ -52,6 +52,8 @@ public class AttendanceViewIntern extends AppCompatActivity {
         btnCalendar2 = findViewById(R.id.btn_Calendar2);
         Exitbutton2 = findViewById(R.id.btnBackAVI);
 
+        SessionManager sessionManager = new SessionManager(AttendanceViewIntern.this);
+
         btnCalendar2.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
@@ -72,10 +74,13 @@ public class AttendanceViewIntern extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 attendanceList.clear();
-                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                    AttendanceModel attendance = dataSnapshot.getValue(AttendanceModel.class);
-                                    if (attendance != null) {
-                                        attendanceList.add(attendance);
+                                for (DataSnapshot dataSnapshot : snapshot.getChildren()) { AttendanceModel attendance = dataSnapshot.getValue(AttendanceModel.class);
+                                    String username = dataSnapshot.child("user").getValue(String.class);
+
+                                    if (username.equals(sessionManager.getUsername())) {
+                                        if (attendance != null) {
+                                            attendanceList.add(attendance);
+                                        }
                                     }
                                 }
                                 adapter.notifyDataSetChanged();
@@ -93,9 +98,13 @@ public class AttendanceViewIntern extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 checkoutList.clear();
                                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                                    AttendanceModel checkout = dataSnapshot.getValue(AttendanceModel.class);
-                                    if (checkout != null) {
-                                        checkoutList.add(checkout);
+                                    String username = dataSnapshot.child("user").getValue(String.class);
+
+                                    if (username.equals(sessionManager.getUsername())) {
+                                        AttendanceModel checkout = dataSnapshot.getValue(AttendanceModel.class);
+                                        if (checkout != null) {
+                                            checkoutList.add(checkout);
+                                        }
                                     }
                                 }
                                 adapter.notifyDataSetChanged();

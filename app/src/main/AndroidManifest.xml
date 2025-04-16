@@ -19,6 +19,18 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".ProfileAdmin"
+            android:exported="false" />
+        <activity
+            android:name=".AdminUserManual"
+            android:exported="false" />
+        <activity
+            android:name=".InternUserManual"
+            android:exported="false" />
+        <activity
+            android:name=".AdminReport"
+            android:exported="false" />
+        <activity
             android:name=".ChangePassword"
             android:exported="false" />
         <activity

@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.se.omapi.Session;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,116 +14,22 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class DataBaseHapler {
     private DatabaseReference databaseReference;
+    private SessionManager sessionManager;
     private Context context;
 
     public DataBaseHapler(Context context) {
         this.databaseReference = FirebaseDatabase.getInstance().getReference("students");
+        this.sessionManager = new SessionManager(context);
         this.context = context;
     }
 
-    // ✅ Add Student to Firebase
-    public void addStudent(StudentModel model) {
-        String studentId = databaseReference.child("students").push().getKey(); // Generate unique ID
-        if (studentId != null) {
-            databaseReference.child("students").child(studentId).setValue(model)
-                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "Student added successfully"))
-                    .addOnFailureListener(e -> Log.e("Firebase", "Failed to add student: " + e.getMessage()));
-        }
-    }
-
-    // Add Teacher to Firebase
-    public void addTeacher(TeacherModel model) {
-        String teacherId = databaseReference.child("teachers").push().getKey();
-        if (teacherId != null) {
-            databaseReference.child("teachers").child(teacherId).setValue(model)
-                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "Teacher added successfully"))
-                    .addOnFailureListener(e -> Log.e("Firebase", "Failed to add teacher: " + e.getMessage()));
-        }
-    }
-
-    // Add Attendance Record to Firebase
-    public boolean addAttendance(AttendanceModel model) {
-        String attendanceId = databaseReference.child("attendance").push().getKey();
-        if (attendanceId != null) {
-            databaseReference.child("attendance").child(attendanceId).setValue(model)
-                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "Attendance recorded successfully"))
-                    .addOnFailureListener(e -> Log.e("Firebase", "Failed to add attendance: " + e.getMessage()));
-        }
-        return false;
-    }
-
-    public void getAllStudentsFromFirebase(DataCallback<List<StudentModel>> callback) {
-        DatabaseReference studentsRef = databaseReference.child("students");
-
-        studentsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<StudentModel> studentList = new ArrayList<>();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    StudentModel student = data.getValue(StudentModel.class);
-                    studentList.add(student);
-                }
-                callback.onCallback(studentList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase", "Failed to fetch students: " + error.getMessage());
-            }
-        });
-    }
-
-    public void getAllTeachersFromFirebase(DataCallback<List<TeacherModel>> callback) {
-        DatabaseReference teachersRef = databaseReference.child("teachers");
-
-        teachersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<TeacherModel> teacherList = new ArrayList<>();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    TeacherModel teacher = data.getValue(TeacherModel.class);
-                    teacherList.add(teacher);
-                }
-                callback.onCallback(teacherList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase", "Failed to fetch teachers: " + error.getMessage());
-            }
-        });
-    }
-
-    public void getAllAttendanceFromFirebase(DataCallback<List<AttendanceModel>> callback) {
-        DatabaseReference attendanceRef = databaseReference.child("attendance");
-
-        attendanceRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<AttendanceModel> attendanceList = new ArrayList<>();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    AttendanceModel attendance = data.getValue(AttendanceModel.class);
-                    attendanceList.add(attendance);
-                }
-                callback.onCallback(attendanceList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase", "Failed to fetch attendance: " + error.getMessage());
-            }
-        });
-    }
-
     // Register a New Student
-    public void saveUserToFirebase(StudentModel students, DatabaseCallback callback) {
+    public void registerUserToFirebase(StudentModel students, DatabaseCallback callback) {
         String userId = databaseReference.push().getKey(); // Unique ID
 
         databaseReference.child(userId).setValue(students).addOnCompleteListener(task -> {
@@ -133,6 +40,53 @@ public class DataBaseHapler {
                 callback.onFailure("Registration Failed!");
             }
         });
+    }
+
+    public void registerSDetailsToFirebase(SDetailsModel sdetails, DatabaseCallback callback) {
+        DatabaseReference sDetailsReference = FirebaseDatabase.getInstance().getReference("sdetails");
+        String userId = sDetailsReference.push().getKey(); // Generate unique ID
+
+        if (userId != null) {
+            sDetailsReference.child(userId).setValue(sdetails).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(context, "Registration Successful!", Toast.LENGTH_SHORT).show();
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Registration Failed!");
+                }
+            });
+        }
+    }
+
+    // Save Teacher to databse
+    public void registerTeacherToFirebase(TeacherModel teachers, DatabaseCallback callback) {
+        DatabaseReference teacherReference = FirebaseDatabase.getInstance().getReference("teacher");
+        String userId = teacherReference.push().getKey(); // Unique ID
+
+        teacherReference.child(userId).setValue(teachers).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(context, "Teacher Registration Successful!", Toast.LENGTH_SHORT).show();
+                callback.onSuccess();
+            } else {
+                callback.onFailure("Teacher Registration Failed!");
+            }
+        });
+    }
+
+    public void registerTDetailsToFirebase(TDetailsModel tdetails, DatabaseCallback callback) {
+        DatabaseReference sDetailsReference = FirebaseDatabase.getInstance().getReference("tdetails");
+        String userId = sDetailsReference.push().getKey(); // Generate unique ID
+
+        if (userId != null) {
+            sDetailsReference.child(userId).setValue(tdetails).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(context, "Teacher Registration Successful!", Toast.LENGTH_SHORT).show();
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("Teacher Registration Failed!");
+                }
+            });
+        }
     }
 
     public void saveAttendanceToFirebase(DatabaseCallback callback) {
@@ -247,6 +201,52 @@ public class DataBaseHapler {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Handle error if any occurs during the database query
                 Toast.makeText(context, "Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void checkTargetAttendance() {
+        DatabaseReference attendancetest = FirebaseDatabase.getInstance().getReference("attendance");
+
+        attendancetest.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String username = sessionManager.getUsername();
+                int recordCount = 0;
+
+                for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
+                    for (DataSnapshot recordSnapshot : dateSnapshot.getChildren()) {
+                        String recordedUsername = recordSnapshot.child("user").getValue(String.class);
+                        if (recordedUsername != null && recordedUsername.equals(username)) {
+                            recordCount++;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Error", error.getMessage());
+            }
+        });
+    }
+
+    public void totalAttendance() {
+        DatabaseReference totalAttendanceRef = FirebaseDatabase.getInstance().getReference("totalattendance");
+        totalAttendanceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    int requiredScore = snapshot.getValue(Integer.class);
+                    int scorePerRecord = 20;
+                } else {
+                    Log.e("Firebase Error", "Total attendance value not found");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase Error", error.getMessage());
             }
         });
     }
